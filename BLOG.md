@@ -106,11 +106,11 @@ Then I fine-tuned it on a mix of random states and real Pong execution traces. A
 
 Left: the real emulator. Right: the network, running only on its own outputs.
 
-It clearly *wants* to be Pong. There are two paddles, a ball and a score. But the paddles have drifted, and the two zeros have melted into shapes that aren't digits at all. The first 12 instructions ran perfectly. **Instruction 13** was a sprite draw, and it put **2 pixels** in the wrong place. The game's logic reads the screen back, so every mistake after that fed into the next step. (An earlier checkpoint at 91% didn't even get that far: it broke on instruction #2, setting the paddle's starting position, and turned both zeros into something like a G and a 3.)
+It clearly *wants* to be Pong. There are two paddles, a ball and a score. But the paddles have drifted, and the two zeros have melted into shapes that aren't digits at all. The first 12 instructions ran perfectly. **Instruction 13** was a sprite draw, and it put **2 pixels** in the wrong place. From there the errors piled up, because every step's output is the next step's input. (An earlier checkpoint at 91% didn't even get that far: it broke on instruction #2, setting the paddle's starting position, and turned both zeros into something like a G and a 3.)
 
 That's the core problem with a "neural computer". 97.7% sounds great, but Pong runs about 1,800 instructions per second. You need something like 99.999% per step for a game to survive even a minute, because every error becomes the input to the next step. An LLM that hallucinates gives you a wrong sentence. A CPU that hallucinates gives you a corrupted machine forever.
 
-(It also lost catastrophic-forgetting points: fine-tuning on Pong dropped its general random-state accuracy from 35% to 15% before it partly recovered. And **failure #9**: my laptop went to sleep on battery halfway through, so 250 training steps took 18 minutes.)
+(Fine-tuning on Pong also caused classic catastrophic forgetting: general random-state accuracy dropped from 35% to 15% before recovering to 37%. And **failure #9**: my laptop went to sleep on battery halfway through, so 250 training steps took 18 minutes.)
 
 ---
 
