@@ -1,0 +1,53 @@
+params: 30.88M  d=1024 layers=4 batch=512
+step      1  loss 0.03207  val bit-err 2.08e-03  val exact  35.11%  pong-trace exact  51.42%    0.0 min  peak 1.5GB
+step    250  loss 0.02437  val bit-err 2.31e-03  val exact  25.71%  pong-trace exact  69.29%    0.3 min  peak 1.7GB
+step    500  loss 0.02482  val bit-err 2.38e-03  val exact  15.14%  pong-trace exact  78.56%    0.7 min  peak 1.7GB
+step    750  loss 0.02733  val bit-err 2.34e-03  val exact  16.58%  pong-trace exact  80.18%    1.0 min  peak 1.7GB
+step   1000  loss 0.01838  val bit-err 2.26e-03  val exact  18.73%  pong-trace exact  83.84%    1.4 min  peak 1.7GB
+step   1250  loss 0.03060  val bit-err 2.31e-03  val exact  20.21%  pong-trace exact  71.92%    9.1 min  peak 1.7GB
+step   1500  loss 0.02596  val bit-err 2.26e-03  val exact  21.19%  pong-trace exact  87.50%    9.4 min  peak 1.7GB
+step   1750  loss 0.02062  val bit-err 2.17e-03  val exact  23.07%  pong-trace exact  87.84%   25.4 min  peak 1.7GB
+step   2000  loss 0.01999  val bit-err 2.12e-03  val exact  23.36%  pong-trace exact  87.94%   25.8 min  peak 1.7GB
+step   2250  loss 0.02164  val bit-err 2.31e-03  val exact  24.19%  pong-trace exact  88.04%   44.0 min  peak 1.7GB
+step   2500  loss 0.02421  val bit-err 2.17e-03  val exact  24.61%  pong-trace exact  89.16%   44.4 min  peak 1.7GB
+step   2750  loss 0.02217  val bit-err 2.11e-03  val exact  25.85%  pong-trace exact  91.02%   71.3 min  peak 1.7GB
+step   3000  loss 0.02365  val bit-err 2.19e-03  val exact  26.27%  pong-trace exact  91.55%   71.6 min  peak 1.7GB
+step   3250  loss 0.02100  val bit-err 2.18e-03  val exact  26.61%  pong-trace exact  90.82%   88.4 min  peak 1.7GB
+step   3500  loss 0.01723  val bit-err 2.16e-03  val exact  27.10%  pong-trace exact  90.43%  104.8 min  peak 1.7GB
+step   3750  loss 0.02431  val bit-err 2.28e-03  val exact  26.95%  pong-trace exact  92.29%  105.1 min  peak 1.7GB
+step   4000  loss 0.02554  val bit-err 2.21e-03  val exact  27.71%  pong-trace exact  91.16%  120.5 min  peak 1.7GB
+step   4250  loss 0.02195  val bit-err 2.18e-03  val exact  28.47%  pong-trace exact  91.94%  120.9 min  peak 1.7GB
+step   4500  loss 0.02129  val bit-err 2.19e-03  val exact  27.61%  pong-trace exact  92.19%  138.7 min  peak 1.7GB
+step   4750  loss 0.01789  val bit-err 2.20e-03  val exact  28.25%  pong-trace exact  91.36%  140.2 min  peak 1.7GB
+step   5000  loss 0.01834  val bit-err 2.33e-03  val exact  29.83%  pong-trace exact  92.53%  140.5 min  peak 1.7GB
+step   5250  loss 0.02466  val bit-err 2.20e-03  val exact  30.59%  pong-trace exact  92.19%  156.2 min  peak 1.7GB
+step   5500  loss 0.02235  val bit-err 2.25e-03  val exact  31.10%  pong-trace exact  93.41%  156.5 min  peak 1.7GB
+step   5750  loss 0.02777  val bit-err 2.23e-03  val exact  31.76%  pong-trace exact  92.87%  157.1 min  peak 1.7GB
+step   6000  loss 0.02805  val bit-err 2.17e-03  val exact  32.23%  pong-trace exact  93.26%  157.5 min  peak 1.7GB
+step   6250  loss 0.01956  val bit-err 2.25e-03  val exact  32.52%  pong-trace exact  93.90%  157.8 min  peak 1.7GB
+step   6500  loss 0.02633  val bit-err 2.20e-03  val exact  32.86%  pong-trace exact  93.60%  158.2 min  peak 1.7GB
+step   6750  loss 0.02066  val bit-err 2.20e-03  val exact  33.11%  pong-trace exact  93.70%  158.5 min  peak 1.7GB
+step   7000  loss 0.02087  val bit-err 2.25e-03  val exact  34.11%  pong-trace exact  94.29%  158.8 min  peak 1.7GB
+step   7250  loss 0.02465  val bit-err 2.25e-03  val exact  34.13%  pong-trace exact  94.38%  159.2 min  peak 1.7GB
+step   7500  loss 0.02209  val bit-err 2.17e-03  val exact  34.11%  pong-trace exact  94.53%  159.5 min  peak 1.7GB
+step   7750  loss 0.02908  val bit-err 2.26e-03  val exact  34.62%  pong-trace exact  95.31%  159.8 min  peak 1.7GB
+step   8000  loss 0.02777  val bit-err 2.27e-03  val exact  34.84%  pong-trace exact  94.34%  160.2 min  peak 1.7GB
+step   8250  loss 0.02565  val bit-err 2.25e-03  val exact  35.33%  pong-trace exact  95.90%  160.5 min  peak 1.7GB
+step   8500  loss 0.02705  val bit-err 2.20e-03  val exact  35.79%  pong-trace exact  95.51%  160.8 min  peak 1.7GB
+step   8750  loss 0.02051  val bit-err 2.22e-03  val exact  35.89%  pong-trace exact  96.39%  161.2 min  peak 1.7GB
+step   9000  loss 0.02022  val bit-err 2.15e-03  val exact  35.86%  pong-trace exact  96.39%  161.5 min  peak 1.7GB
+step   9250  loss 0.02070  val bit-err 2.19e-03  val exact  35.86%  pong-trace exact  96.48%  161.8 min  peak 1.7GB
+step   9500  loss 0.01633  val bit-err 2.16e-03  val exact  36.23%  pong-trace exact  96.14%  162.2 min  peak 1.7GB
+step   9750  loss 0.01941  val bit-err 2.23e-03  val exact  36.30%  pong-trace exact  96.63%  162.5 min  peak 1.7GB
+step  10000  loss 0.01602  val bit-err 2.24e-03  val exact  36.28%  pong-trace exact  97.02%  162.8 min  peak 1.7GB
+step  10250  loss 0.01914  val bit-err 2.22e-03  val exact  36.69%  pong-trace exact  97.41%  163.2 min  peak 1.7GB
+step  10500  loss 0.02029  val bit-err 2.23e-03  val exact  36.62%  pong-trace exact  96.97%  163.5 min  peak 1.7GB
+step  10750  loss 0.01621  val bit-err 2.22e-03  val exact  36.62%  pong-trace exact  97.31%  163.8 min  peak 1.7GB
+step  11000  loss 0.01574  val bit-err 2.22e-03  val exact  36.47%  pong-trace exact  97.27%  164.2 min  peak 1.7GB
+step  11250  loss 0.01931  val bit-err 2.23e-03  val exact  36.77%  pong-trace exact  97.51%  164.5 min  peak 1.7GB
+step  11500  loss 0.02460  val bit-err 2.22e-03  val exact  36.57%  pong-trace exact  97.41%  164.8 min  peak 1.7GB
+step  11750  loss 0.02188  val bit-err 2.23e-03  val exact  36.87%  pong-trace exact  97.51%  165.2 min  peak 1.7GB
+step  12000  loss 0.01972  val bit-err 2.22e-03  val exact  36.91%  pong-trace exact  97.66%  165.5 min  peak 1.7GB
+done
+/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 6 leaked semaphore objects to clean up at shutdown: {'/mp-lykvt3i7', '/mp-hl9pdafj', '/mp-ehg75n8l', '/mp-xnf5s41h', '/mp-oaw_gdrq', '/mp-hr1eakmx'}
+  warnings.warn(

@@ -1,0 +1,16 @@
+params: 6.37M  d=256 layers=8 batch=256
+step      1  loss 0.70304  val bit-err 4.44e-01  val exact   0.00%    0.1 min  peak 4.8GB
+step    250  loss 0.05050  val bit-err 6.68e-03  val exact   2.95%    2.3 min  peak 4.9GB
+step    500  loss 0.05161  val bit-err 1.13e-02  val exact   0.00%    4.6 min  peak 4.9GB
+step    750  loss 0.03346  val bit-err 6.94e-03  val exact   0.61%    6.9 min  peak 4.9GB
+step   1000  loss 0.01737  val bit-err 6.18e-03  val exact   2.73%    9.1 min  peak 4.9GB
+step   1250  loss 0.02403  val bit-err 6.00e-03  val exact   3.10%   11.4 min  peak 4.9GB
+step   1500  loss 0.01844  val bit-err 5.47e-03  val exact   3.93%   13.8 min  peak 4.9GB
+step   1750  loss 0.02017  val bit-err 5.11e-03  val exact   4.64%   16.1 min  peak 4.9GB
+step   2000  loss 0.01508  val bit-err 4.04e-03  val exact   9.57%   18.4 min  peak 4.9GB
+step   2250  loss 0.01361  val bit-err 3.92e-03  val exact  10.23%   20.8 min  peak 4.9GB
+step   2500  loss 0.01184  val bit-err 3.81e-03  val exact  10.82%   23.1 min  peak 4.9GB
+step   2750  loss 0.01341  val bit-err 3.67e-03  val exact   9.40%   25.4 min  peak 4.9GB
+step   3000  loss 0.00995  val bit-err 3.50e-03  val exact   8.64%   27.7 min  peak 4.9GB
+/opt/homebrew/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 6 leaked semaphore objects to clean up at shutdown: {'/mp-_su9uetn', '/mp-hjm44jkg', '/mp-a834iary', '/mp-e08uq734', '/mp-5zc92_ky', '/mp-da4xhto_'}
+  warnings.warn(

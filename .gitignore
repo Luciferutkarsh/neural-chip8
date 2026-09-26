@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.DS_Store
+# model checkpoints (~120MB each)
+out/*.safetensors
+# early smoke-test logs
+out/smoke*
