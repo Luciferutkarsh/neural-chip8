@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neural CHIP-8 (Medium draft)</title>
+<style>
+  :root { --bg:#fff; --fg:#242424; --dim:#6b6b6b; --code:#f2f2f2; --note:#fff7e0; }
+  body { background:var(--bg); color:var(--fg); font:20px/1.6 Georgia, "Times New Roman", serif; margin:0; }
+  main { max-width:700px; margin:0 auto; padding:32px 16px 80px; }
+  .howto { font:15px/1.5 -apple-system, system-ui, sans-serif; background:var(--note); border:1px solid #f0d27a;
+           border-radius:8px; padding:12px 16px; margin-bottom:40px; }
+  .howto b { font-weight:600; }
+  h1 { font:700 40px/1.2 -apple-system, system-ui, sans-serif; margin:0 0 8px; }
+  h2 { font:700 26px/1.3 -apple-system, system-ui, sans-serif; margin:48px 0 8px; }
+  .subtitle { font:400 22px/1.4 -apple-system, system-ui, sans-serif; color:var(--dim); margin:0 0 32px; }
+  img { max-width:100%; display:block; margin:24px auto 6px; }
+  figcaption { text-align:center; color:var(--dim); font-size:15px; font-family:-apple-system, system-ui, sans-serif; }
+  pre { background:var(--code); padding:14px 16px; overflow-x:auto; font:15px/1.5 Menlo, monospace; }
+  code { font-family:Menlo, monospace; font-size:0.85em; background:var(--code); padding:1px 4px; }
+  pre code { background:none; padding:0; font-size:inherit; }
+  blockquote { border-left:3px solid var(--fg); margin:24px 0; padding-left:20px; font-style:italic; }
+  hr { border:none; text-align:center; margin:40px 0; }
+  hr::after { content:"· · ·"; color:var(--dim); letter-spacing:8px; }
+</style>
+</head>
+<body>
+<main>
+
+<div class="howto">
+  <b>How to post this on Medium:</b> open medium.com → Write. Select everything <i>below this box</i> in this page
+  (click just before the title, then shift-click after the last line), copy, and paste into the empty Medium story.
+  The title, headings, images, GIF and code blocks come across. Then check the images loaded, add tags
+  (suggested: <i>Machine Learning, Artificial Intelligence, Emulation, Programming, Side Project</i>) and publish.
+</div>
+
+<h1>I Trained a Neural Network to Be a Game Console. It Hallucinated the Score.</h1>
+<p class="subtitle">No emulator in the loop, just weights pretending to be a CPU. Here's everything that went wrong in one day on a MacBook.</p>
+
+<p>Someone got Linux running on an ESP32, and I've been thinking about it for weeks. I don't have much hardware, so I wanted a software project that's just as strange. This is where I ended up:</p>
+
+<blockquote>What if there was no emulator at all? What if a neural network <em>was</em> the computer?</blockquote>
+
+<p>Not a network that generates <em>pictures</em> of a game, like those Doom-diffusion demos. I wanted a network that does a CPU's actual job: take the full state of a machine (registers, memory, program counter, screen), execute one instruction, and output the next state, bit-exact. Run that in a loop and in theory you have a computer made only of weights.</p>
+
+<p>Spoiler: it doesn't fully work yet. The ways it failed were more interesting than I expected, so here they all are.</p>
+
+<h2>The target: CHIP-8</h2>
+
+<p>CHIP-8 is a tiny virtual machine from the 1970s: 35 instructions, 16 registers, 4KB of memory, and a 64×32 black-and-white screen. It's the "hello world" of emulator projects, which makes it about the smallest real computer I could pick.</p>
+
+<p>Before any AI I needed a ground truth, so I wrote a normal CHIP-8 emulator (~150 lines of Python, the "teacher"), a tiny assembler, and <strong>my own Pong</strong> in CHIP-8 assembly: 332 bytes, both paddles AI-controlled, so it plays itself.</p>
+
+<p><strong>Failure #1 was mine, not the AI's.</strong> My Pong kept rendering frames with no ball and no paddles. Printing the pixel count per frame showed it alternating 41, 28, 41, 28… and 28 was just the score digits. My game loop erased everything, ran ~40 instructions of logic, and only then redrew, so every other frame was captured mid-erase. Old CRT screens hid this with phosphor glow. I added "phosphor" to my renderer and reordered the draw code.</p>
+
+<h2>The setup</h2>
+
+<p>The network sees the whole machine as 88 "tokens" of up to 64 bits each: the current opcode, program counter, index register, stack pointer, timers, keys, a random byte, 16 registers, 16 stack slots, 16 bytes of memory and 32 screen rows. It outputs the next state.</p>
+
+<p>A small harness writes that output back and fetches the next opcode. <strong>The harness never decodes the instruction.</strong> It has no <code>if opcode == JUMP</code> anywhere. All the knowledge of what an instruction <em>does</em> has to live in the weights.</p>
+
+<p>The training data is <strong>random machines</strong>: random registers, random screen noise, a random stack, and one random instruction. The label is whatever my real emulator says happens next. The network never sees Pong. The plan was to train it on chaos, then see if it can play a game it has never seen.</p>
+
+<p>Everything was trained on my laptop (Apple M5, 16GB) with Apple's MLX framework.</p>
+
+<hr>
+
+<h2>Failures #2–4: I couldn't even start training</h2>
+
+<p><strong>#2: I fork-bombed my laptop.</strong> On macOS, Python's multiprocessing starts each worker by re-importing your main script. My training script had no <code>if __name__ == "__main__":</code> guard, so every data worker started its own training run, which started its own workers… The log reached 300,000 lines before I noticed.</p>
+
+<p><strong>#3: an infinite queue.</strong> I fed <code>Pool.imap</code> an endless generator. It happily queued work forever: 140 batches a second that nobody asked for, all unpickled on the main thread, fighting the training loop.</p>
+
+<p><strong>#4: swap death.</strong> Training was using 11GB (GPU memory counts on Apple Silicon) and Chrome was using 12GB, on a 16GB machine. There was 10.5GB of swap in use and steps took minutes instead of a second. Smaller batches and a hard memory cap fixed it.</p>
+
+<h2>Failure #5: I rebuilt the XOR problem</h2>
+
+<p>First real run: a 6.4M-parameter transformer, 20 minutes of training. It got about 10% of instructions exactly right, and the breakdown made no sense:</p>
+
+<ul>
+  <li><code>LD Vx, kk</code> (put a number in a register): <strong>0%</strong></li>
+  <li><code>JP nnn</code> (jump): <strong>0%</strong></li>
+  <li>compare-and-skip: ~40%</li>
+  <li>clear screen: 80%</li>
+</ul>
+
+<p>The <em>easiest</em> instructions were at zero. I'd had a "clever" idea: output only <em>which bits flip</em>, so "nothing changes" is the default. But then loading a value isn't a copy any more. The network has to output <code>old_value XOR new_value</code>, and XOR is the problem that stalled neural networks in 1969. I had wrapped it around every copy instruction.</p>
+
+<p>I felt clever when I spotted that. Then I fixed it, and the numbers didn't move.</p>
+
+<h2>Failure #6: the NOP machine</h2>
+
+<p>So I finally looked at what it actually predicted:</p>
+
+<pre><code>JP 8b9:    wanted PC = 8b9,  got 91c   (old PC was 91a... it just did +2)
+LD V8,f0:  got a2, old value was a2   (it just left it alone)</code></pre>
+
+<p>It had learned to be <strong>a CPU where every instruction is a no-op.</strong> Go to the next instruction, touch nothing. Almost every output bit really doesn't change on any given instruction, so this gets something like 99% of bits right while being completely useless. It's a very comfortable place for gradient descent to sit.</p>
+
+<h2>Failure #7: it couldn't find the instruction</h2>
+
+<p>I made the smallest test I could think of: train <em>only</em> on <code>LD I, nnn</code>, where the answer is literally "copy the last 12 bits of the opcode". It sat at a loss of <strong>0.693</strong>. That's ln(2), a coin flip.</p>
+
+<p>The data was fine. The problem was attention. The token that needed the answer had to <em>find</em> the opcode token among 88 tokens, and at the start attention is spread evenly, so the signal arrives diluted 88 times over. I was asking the network to discover its own wiring.</p>
+
+<p>Real CPUs don't discover their wiring. They have a <strong>bus</strong>. So I gave the network one: every part of it now also sees a shared vector with the instruction and the registers. The same trivial test went from <strong>coin flip to 100% in 250 steps</strong>.</p>
+
+<h2>What actually worked (partly)</h2>
+
+<p>With the bus in place I dropped attention entirely and split the network into two learned parts:</p>
+
+<ul>
+  <li>a <strong>CPU core</strong> that reads the bus and writes the next registers, program counter, stack and memory</li>
+  <li>a <strong>scanline unit</strong>: one small network shared by all 32 screen rows. Each row sees the bus and its own pixels and decides which pixels flip. A max-pool across rows acts as the "collision" wire back to the core.</li>
+</ul>
+
+<figure>
+  <img src="https://raw.githubusercontent.com/Luciferutkarsh/neural-chip8/main/docs/architecture.png" alt="Architecture of the neural CHIP-8">
+  <figcaption>One forward pass is one clock cycle. The harness never decodes the instruction.</figcaption>
+</figure>
+
+<p>That trained about 4× faster, and instructions started clicking <strong>one at a time</strong>. Between step 4,000 and step 8,000:</p>
+
+<ul>
+  <li><code>JP</code> went from 8% to <strong>95%</strong></li>
+  <li><code>LD I</code> went from 6% to <strong>83%</strong></li>
+  <li><code>CLS</code> went from 30% to <strong>100%</strong></li>
+  <li><code>ADD</code>, <code>SUB</code>, <code>CALL</code>, <code>RET</code> stayed at ~0%</li>
+</ul>
+
+<p>Arithmetic and the stack were the last holdouts. After 20k steps (28 minutes) it was at <strong>35% exact on random states</strong> and still climbing slowly.</p>
+
+<p><strong>Failure #8</strong>, small but annoying: MLX treats every array stored on a model as a trainable parameter, including my list of integer indices. The optimizer turned them into floats and the whole thing crashed.</p>
+
+<p>The best surprise of the day: <strong>that model had never seen Pong, but it already got 51% of Pong's real instructions exactly right.</strong> Something general had been learned.</p>
+
+<h2>Closing the loop: the CPU hallucinates</h2>
+
+<p>Then I fine-tuned it on a mix of random states and real Pong execution traces. After another 12k steps it reached <strong>97.7% per instruction on Pong</strong>, and I let it drive Pong on its own, next to the real emulator.</p>
+
+<figure>
+  <img src="https://raw.githubusercontent.com/Luciferutkarsh/neural-chip8/main/out/pong_final.gif" alt="Real emulator vs neural network playing Pong">
+  <figcaption>Left: the real emulator. Right: the network, running only on its own outputs.</figcaption>
+</figure>
+
+<p>It clearly <em>wants</em> to be Pong. There are two paddles, a ball and a score. But the paddles drift, and the two zeros melt into shapes that aren't digits at all.</p>
+
+<p>The first 12 instructions ran perfectly. <strong>Instruction 13</strong> was a sprite draw, and it put <strong>2 pixels</strong> in the wrong place. From there the errors piled up, because every step's output is the next step's input. (An earlier checkpoint at 91% didn't even get that far. It broke on instruction #2, setting the paddle's starting position, and turned both zeros into something like a G and a 3.)</p>
+
+<p>That's the core problem with a neural computer. 97.7% sounds great, but Pong runs about 1,800 instructions per second. You need something like 99.999% per step for a game to survive even a minute. An LLM that hallucinates gives you a wrong sentence. <strong>A CPU that hallucinates gives you a corrupted machine forever.</strong></p>
+
+<p>Two more for the pile. Fine-tuning on Pong caused classic <em>catastrophic forgetting</em>: general accuracy dropped from 35% to 15% before recovering to 37%. And <strong>failure #9</strong>: my laptop went to sleep on battery mid-training, so 250 training steps took 18 minutes.</p>
+
+<hr>
+
+<h2>What I learned</h2>
+
+<p><strong>1. The hard part wasn't what I expected.</strong> Addition is hard. But "copy this number over there" was harder at first, because the network had to discover <em>where</em> "there" was.</p>
+
+<p><strong>2. A loss curve can look great while the model does nothing.</strong> The NOP machine had excellent per-bit loss. Look at actual predictions early.</p>
+
+<p><strong>3. Architecture is a form of knowledge.</strong> Every fix that worked (a bus, a shared scanline unit, a collision wire) is also how real hardware is built. The network still learns all the logic, but it needs the right wires.</p>
+
+<p><strong>4. Exactness is a different game from accuracy.</strong> 97.7% is a great score for most ML tasks. For a computer, it's broken.</p>
+
+<h2>What's next</h2>
+
+<ul>
+  <li>Train longer, plugged in this time. The last 4k steps took it from 94% to 97.7% and it hadn't plateaued.</li>
+  <li>Add boot and reset states to the training traces so the first instructions of a game get learned.</li>
+  <li>A "neural ECC": use the network's own confidence to catch its mistakes before they compound.</li>
+  <li>The real test is a ROM it has never seen. On my held-out "bouncing smiley" ROM it currently breaks at instruction 11.</li>
+</ul>
+
+<p>All the code (emulator, assembler, Pong, training, and a very honest dev log) is on GitHub: <a href="https://github.com/Luciferutkarsh/neural-chip8">github.com/Luciferutkarsh/neural-chip8</a>. If you have ideas for getting from 97.7% to 99.999%, I'd love to hear them.</p>
+
+<p><em>Built in a day on a MacBook, pair-programming with Claude Code.</em></p>
+
+</main>
+</body>
+</html>
