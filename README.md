@@ -3,6 +3,8 @@
 A neural network trained to *be* a CHIP-8 CPU: machine state in, next state out, no emulator logic in the loop.
 Blog draft: [BLOG.md](BLOG.md). Every failure and number: [DEVLOG.md](DEVLOG.md).
 
+![architecture](docs/architecture.png)
+
 | file | what |
 |---|---|
 | `emu.py` | reference CHIP-8 emulator (the teacher) |

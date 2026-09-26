@@ -83,6 +83,8 @@ With the bus in place I dropped attention entirely and split the network into tw
 - a **core** that reads the bus and writes the next registers, PC, stack and memory
 - a **scanline unit**: one small network shared by all 32 screen rows. Each row sees the bus and its own pixels and decides which pixels flip. A max-pool across rows acts as the "collision" wire back to the core.
 
+![how the neural CPU works](docs/architecture.png)
+
 That trained about 4x faster, and instructions started clicking **one at a time**:
 
 | instruction | step 4k | step 8k |
